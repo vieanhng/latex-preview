@@ -44,7 +44,7 @@ git clone git@github.com:vieanhng/latex-preview.git
 ```
 
 ### 2. Mở Chrome Extensions
-Truy cập: [chrome://extensions](https://chrome.google.com/webstore/category/extensions )
+Truy cập: [chrome://extensions](chrome://extensions/)
 
 ### 3. Bật chế độ "Developer mode"
 
