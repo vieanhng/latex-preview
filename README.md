@@ -43,6 +43,8 @@ Clone repo này hoặc tải file `.zip` đã đóng gói.
 git clone git@github.com:vieanhng/latex-preview.git
 ```
 
+Hoặc tải [tại đây](https://codeload.github.com/vieanhng/latex-preview/zip/refs/heads/main)
+
 ### 2. Mở Chrome Extensions
 Truy cập: [chrome://extensions](chrome://extensions/)
 
