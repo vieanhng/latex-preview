@@ -1,0 +1,11 @@
+#latex-tooltip {
+  position: absolute;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+  max-width: 300px;
+  font-family: sans-serif;
+  border-radius: 6px;
+}

@@ -1,0 +1,33 @@
+#latex-preview-tooltip {
+    position: fixed;
+    z-index: 2147483647;
+    background-color: #ffffff;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 16px;
+    max-width: 1000px;
+    display: none;
+}
+
+#latex-preview-tooltip .latex-rendered-segment {
+    margin-bottom: 8px;
+}
+
+#latex-preview-tooltip .latex-rendered-segment:last-child {
+    margin-bottom: 0;
+}
+
+#latex-preview-tooltip .latex-error-segment {
+    color: #D8000C;
+    background-color: #FFD2D2;
+    padding: 5px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.katex {
+    font-size: 1.2em !important;
+    color:black;
+}
