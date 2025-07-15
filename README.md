@@ -1,12 +1,12 @@
 # 🧮 LaTeX Previewer
 
-> *Chrome Extension giúp xem trước các công thức toán học viết bằng LaTeX chỉ với vài thao tác đơn giản.*
+> *Chrome Extension giúp xem trước các công thức toán học, hóa học viết bằng LaTeX chỉ với vài thao tác đơn giản.*
 
 ---
 
 ## 📌 Mô tả
 
-**LaTeX Previewer** là tiện ích mở rộng cho trình duyệt Chrome, hỗ trợ người dùng học tập, nghiên cứu hoặc làm việc với các công thức toán học. Khi bạn **bôi đen (chọn) văn bản chứa mã LaTeX**, nhấn chuột phải → chọn **"Preview LaTeX"**, tiện ích sẽ hiển thị công thức dưới dạng đẹp mắt trong một tooltip nhỏ ngay tại vị trí con trỏ chuột.
+**LaTeX Previewer** là tiện ích mở rộng cho trình duyệt Chrome, hỗ trợ người dùng học tập, nghiên cứu hoặc làm việc với các công thức toán học, hóa học. Khi bạn **bôi đen (chọn) văn bản chứa mã LaTeX**, nhấn chuột phải → chọn **"Preview LaTeX"**, tiện ích sẽ hiển thị công thức dưới dạng đẹp mắt trong một tooltip nhỏ ngay tại vị trí con trỏ chuột.
 
 ---
 
@@ -72,7 +72,7 @@ Bạn có thể liên hệ qua email: **nva4work@gmail.com** nếu gặp vấn �
 
 ## 📜 Giấy phép
 
-MIT © VieAnhNg
+MIT © vieanhng
 
 ---
 
