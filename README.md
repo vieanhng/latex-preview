@@ -29,7 +29,7 @@ latex-previewer-extension/
 ├── popup.html          ← Giao diện popup khi click vào icon
 ├── style.css           ← CSS cho tooltip
 ├── icon/               ← Các file icon
-└── katex/              ← Thư viện KaTeX
+└── lib/              ← Thư viện KaTeX
 ```
 
 ---
