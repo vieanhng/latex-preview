@@ -1,4 +1,34 @@
 let lastMouseUpEvent = null;
+document.addEventListener('contextmenu', function (e) {
+  e.stopPropagation();
+}, true);
+
+const originalAddEventListener = document.addEventListener.bind(document);
+
+document.addEventListener = function (type, listener, options) {
+  if (type === 'contextmenu') {
+    const wrapper = function (e) {
+      if (e.defaultPrevented) {
+        e.preventDefault = function () {};
+      }
+      return listener(e);
+    };
+    return originalAddEventListener(type, wrapper, options);
+  } else {
+    return originalAddEventListener(type, listener, options);
+  }
+};
+
+document.oncontextmenu = null;
+document.onselectstart = null;
+document.oncopy = null;
+document.oncut = null;
+
+// Remove inline event handlers
+document.documentElement.style.webkitUserSelect = 'auto';
+document.documentElement.style.MozUserSelect = 'auto';
+document.documentElement.style.msUserSelect = 'auto';
+document.documentElement.style.userSelect = 'auto';
 
 // Lưu lại vị trí chuột cuối cùng khi người dùng nhả chuột (sau khi bôi đen)
 document.addEventListener('mouseup', (event) => {
