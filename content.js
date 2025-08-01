@@ -1,49 +1,92 @@
 let lastMouseUpEvent = null;
-document.addEventListener('contextmenu', function (e) {
-  e.stopPropagation();
-}, true);
-
-const originalAddEventListener = document.addEventListener.bind(document);
-
-document.addEventListener = function (type, listener, options) {
-  if (type === 'contextmenu') {
-    const wrapper = function (e) {
-      if (e.defaultPrevented) {
-        e.preventDefault = function () {};
-      }
-      return listener(e);
-    };
-    return originalAddEventListener(type, wrapper, options);
-  } else {
-    return originalAddEventListener(type, listener, options);
-  }
-};
-
-document.oncontextmenu = null;
+let selectionButton = null;
+let tooltipShow = null;
 
 // Lưu lại vị trí chuột cuối cùng khi người dùng nhả chuột (sau khi bôi đen)
 document.addEventListener('mouseup', (event) => {
-  if (window.getSelection().toString().length > 0) {
-    lastMouseUpEvent = event;
-  }
+  // Delay nhỏ để đảm bảo selection đã được cập nhật
+  setTimeout(() => {
+    const selection = window.getSelection();
+    if (selection.toString().trim().length > 0 && !tooltipShow) {
+      lastMouseUpEvent = event;
+      createSelectionButton(event.pageX, event.pageY, selection.toString());
+    }
+  }, 10);
 }, true);
 
-
-// Lắng nghe tin nhắn từ background script
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "preview" && lastMouseUpEvent) {
-    createOrUpdateTooltip(request.latex, lastMouseUpEvent.pageX, lastMouseUpEvent.pageY);
+// Hàm tạo nút "Preview"
+function createSelectionButton(x, y, selectedText) {
+  // Xóa nút cũ nếu có
+  if (selectionButton) {
+    selectionButton.remove();
   }
-});
+
+  selectionButton = document.createElement('div');
+  selectionButton.innerHTML = `✨`;
+  selectionButton.style.cssText = `
+    position: absolute;
+    background-color: #ffffff;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    z-index: 10001;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    user-select: none;
+    pointer-events: auto;
+  `;
+
+  selectionButton.style.left = `${x + 10}px`;
+  selectionButton.style.top = `${y + 10}px`;
+
+  // Thử nhiều loại event khác nhau
+  selectionButton.addEventListener('click', handleClick, true);
+  
+  selectionButton.addEventListener('mouseup', (e) => {
+    console.log('Button mouseup!');
+    e.preventDefault();
+    e.stopPropagation();
+  }, true);
+
+  function handleClick(e) {
+    console.log('Button clicked!', selectedText);
+    e.preventDefault();
+    e.stopPropagation();
+    selectionButton.remove();
+    selectionButton = null;    
+    createOrUpdateTooltip(selectedText, x, y);
+        
+  }
+
+  document.body.appendChild(selectionButton);
+  
+  // Đảm bảo nút không bị xóa ngay lập tức
+  setTimeout(() => {
+    document.addEventListener('mouseup', function clearButton() {
+      if (selectionButton) {
+        selectionButton.remove();
+        selectionButton = null;
+      }
+      document.removeEventListener('mouseup', clearButton, true);
+    }, { once: true });
+  }, 100);
+}
 
 function createOrUpdateTooltip(text, x, y) {
-  // Xóa tooltip cũ nếu có
+  console.log('Creating tooltip with text:', text);
+
+  if (selectionButton) {
+        selectionButton.remove();
+        selectionButton = null;
+  }
+  
   let existingTooltip = document.getElementById('latex-preview-tooltip');
   if (existingTooltip) {
     existingTooltip.remove();
   }
 
-  // Tạo container cho tooltip
   const tooltip = document.createElement('div');
   tooltip.id = 'latex-preview-tooltip';
   tooltip.style.cssText = `
@@ -54,32 +97,26 @@ function createOrUpdateTooltip(text, x, y) {
     padding: 10px;
     border-radius: 5px;
     z-index: 10000;
-    max-width: 60%; /* Giới hạn chiều rộng để tránh tràn màn hình */
+    max-width: 60%;
     word-wrap: break-word;
-    display: flex; /* Sử dụng flexbox để căn chỉnh nội dung và nút close */
-    flex-direction: column; /* Xếp theo cột để nút close nằm dưới hoặc trên nội dung */
+    display: flex;
+    flex-direction: column;
   `;
 
-
   const latexRegex = /(\$[^$]+\$|\$\$[\s\S]+?\$\$|\\\[[\s\S]+?\\\]|\\\(.+?\\\))/g;
-let renderedHtml = text.replace(latexRegex, (match) => {
-  let cleanLatex = match.replace(/^\$|\$$/g, '');
-  cleanLatex = cleanLatex.replace(/^\\\[|\\\]$/g, '');
-  cleanLatex = cleanLatex.replace(/^\\\(|\\\)$/g, '');
+  let renderedHtml = text.replace(latexRegex, (match) => {
+    let cleanLatex = match.replace(/^\$|\$$/g, '');
+    cleanLatex = cleanLatex.replace(/^\\\$|\\\]$/g, '');
+    cleanLatex = cleanLatex.replace(/^\\\(|\\\)$/g, '');
 
-  // Xác định xem công thức có phải là display mode hay không.
-  // Đối với các ký hiệu inline ($...$, \(...\)), chúng ta sẽ buộc displayMode = false.
-  // Đối với các ký hiệu display ($$...$$, \[...\]), chúng ta vẫn giữ displayMode = true.
-  const isDisplayMode = match.startsWith('$$') || match.startsWith('\\[');
+    const isDisplayMode = match.startsWith('$$') || match.startsWith('\\[');
 
-  try {
-    return `<span class="latex-rendered-segment">${katex.renderToString(cleanLatex, { displayMode: isDisplayMode, throwOnError: false })}</span>`;
-  } catch (e) {
-    return `<span class="latex-error-segment">${match} (Error: ${e.message})</span>`;
-  }
-});
-
-  if (renderedHtml === text);
+    try {
+      return `<span class="latex-rendered-segment">${katex.renderToString(cleanLatex, { displayMode: isDisplayMode, throwOnError: false })}</span>`;
+    } catch (e) {
+      return `<span class="latex-error-segment">${match} (Error: ${e.message})</span>`;
+    }
+  });
 
   tooltip.innerHTML = renderedHtml;
   document.body.appendChild(tooltip);
@@ -98,23 +135,26 @@ let renderedHtml = text.replace(latexRegex, (match) => {
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
   tooltip.style.display = 'block';
+  tooltipShow = true;
 
   const closeTooltip = () => {
     if (tooltip.parentElement) {
       tooltip.remove();
+      tooltipShow = false;
     }
-    document.removeEventListener('click', closeTooltip);
   };
 
+  // Đóng tooltip khi click ra ngoài
   document.addEventListener('click', closeTooltip, { once: true });
 }
 
+// Inject KaTeX CSS
 function injectKaTeXCSS() {
-    const link = document.createElement('link');
-    link.href = chrome.runtime.getURL('lib/katex.min.css');
-    link.type = 'text/css';
-    link.rel = 'stylesheet';
-    document.head.appendChild(link);
+  const link = document.createElement('link');
+  link.href = chrome.runtime.getURL('lib/katex.min.css');
+  link.type = 'text/css';
+  link.rel = 'stylesheet';
+  document.head.appendChild(link);
 }
 
 injectKaTeXCSS();
