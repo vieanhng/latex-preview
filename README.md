@@ -12,7 +12,7 @@
 
 ## ✨ Tính năng chính
 
-- ✅ Chọn văn bản chứa LaTeX → Chuột phải → Chọn "Preview"
+- ✅ Chọn văn bản chứa LaTeX → Bấm ✨
 - ✅ Hỗ trợ các định dạng phổ biến: `$...$`, `$$...$$`, `\(...\`, `$$...$$`
 - ✅ Render công thức bằng thư viện **KaTeX** (nhanh và nhẹ)
 - ✅ Tooltip hiển thị đẹp mắt
